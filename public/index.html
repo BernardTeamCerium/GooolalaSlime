@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gooolala! by Aviana, the Slime Queen</title>
+  <meta name="description" content="Royally fun to squish! Handmade Gooolala slime in ten royal colors, by Aviana, the Slime Queen.">
+  <meta name="theme-color" content="#301139">
+  <meta property="og:title" content="Gooolala! by Aviana, the Slime Queen">
+  <meta property="og:description" content="Ten royal colors. Endless imagination. Find the gooo that feels like you.">
+  <meta property="og:image" content="/img/gooolala-logo.webp">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a class="skip" href="#menu">Skip to the Gooo Menu</a>
+
+  <div class="announce" id="announce">
+    <span>✨ Handmade by the Slime Queen</span>
+    <span class="dot">·</span>
+    <span id="announce-shipping">Royal shipping on every order</span>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top" aria-label="Gooolala home">
+        <span class="brand-word">Gooolala<span class="bang">!</span></span>
+        <span class="brand-sig">by Aviana, the Slime Queen</span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#menu">Gooo Menu</a>
+        <a href="#queen">Meet the Queen</a>
+        <a href="#care">Gooo Care</a>
+      </nav>
+      <button class="bag-btn" id="open-bag" aria-haspopup="dialog" aria-controls="bag">
+        My Gooo <span class="bag-count" id="bag-count" aria-live="polite">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="bubbles" aria-hidden="true">
+        <i style="--x:6%;--s:26px;--d:9s;--c:var(--pink)"></i>
+        <i style="--x:18%;--s:14px;--d:7s;--c:var(--aqua)"></i>
+        <i style="--x:41%;--s:20px;--d:11s;--c:var(--lavender)"></i>
+        <i style="--x:57%;--s:12px;--d:8s;--c:var(--yellow)"></i>
+        <i style="--x:73%;--s:30px;--d:12s;--c:var(--pink)"></i>
+        <i style="--x:88%;--s:16px;--d:9.5s;--c:var(--aqua)"></i>
+      </div>
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">A colorful little kingdom</p>
+          <h1>Life’s more fun<br>with a little <span class="gooo">gooo.</span></h1>
+          <p class="lede">Meet Gooolala! by Aviana, the Slime Queen. Ten royal colors. Endless imagination. Find the gooo that feels like you.</p>
+          <div class="hero-ctas">
+            <a class="btn btn-plum" href="#menu">Explore the Gooo Menu <span aria-hidden="true">↘</span></a>
+            <a class="link" href="#queen">Meet Aviana →</a>
+          </div>
+          <ul class="hero-facts">
+            <li><span aria-hidden="true">✦</span> 10 royal colors</li>
+            <li><span aria-hidden="true">✦</span> Mixed by hand</li>
+            <li><span aria-hidden="true">✦</span> One slime queen</li>
+          </ul>
+        </div>
+        <div class="hero-art">
+          <div class="blob blob-a" aria-hidden="true"></div>
+          <div class="blob blob-b" aria-hidden="true"></div>
+          <img class="hero-logo" src="/img/gooolala-logo.webp" width="1200" height="619"
+               alt="Gooolala! by Aviana, the Slime Queen — bubble letters with a crowned lavender slime mascot">
+          <span class="sticker sticker-yellow" aria-hidden="true">Royally fun<br>to squish!</span>
+          <span class="sticker sticker-pink" aria-hidden="true">Pick your<br>happy color.</span>
+          <span class="sparkle s1" aria-hidden="true">✦</span>
+          <span class="sparkle s2" aria-hidden="true">✦</span>
+          <span class="sparkle s3" aria-hidden="true">✦</span>
+        </div>
+      </div>
+      <svg class="drip-edge" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 0h1440v26c-40 0-48 40-80 40s-34-30-74-30-52 46-96 46-40-36-84-36-56 22-96 22-44-40-92-40-50 50-100 50-46-34-88-34-60 18-104 18-52-36-96-36-46 44-90 44-50-30-94-30-50 26-96 26S168 34 120 34 60 70 0 52z" />
+      </svg>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Squish. Stretch. Smile.</span><b>✦</b><span>Welcome to the gooo life.</span><b>✦</b>
+        <span>Royally fun to squish!</span><b>✦</b><span>Ten royal colors.</span><b>✦</b>
+        <span>Squish. Stretch. Smile.</span><b>✦</b><span>Welcome to the gooo life.</span><b>✦</b>
+        <span>Royally fun to squish!</span><b>✦</b><span>Ten royal colors.</span><b>✦</b>
+      </div>
+    </div>
+
+    <!-- PRODUCT -->
+    <section class="menu" id="menu" aria-labelledby="menu-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">The first royal collection</p>
+          <h2 id="menu-title">The Gooo Menu</h2>
+          <p class="section-sub">Choose your color. Claim your crown.</p>
+        </div>
+
+        <div class="product">
+          <div class="product-stage" id="stage" style="--slime:#F84FB3">
+            <svg class="puddle" viewBox="0 0 400 400" aria-hidden="true">
+              <path class="puddle-shape" d="M200 40c62 0 118 26 140 78 22 52 6 92 18 136 12 46-6 92-56 104-30 8-38 32-62 40-22 6-30-26-44-24-22 4-26 40-50 36-26-4-20-44-44-56-36-18-74-34-82-82-8-46 18-66 16-112-2-46 12-84 50-104 34-18 60-16 114-16z"/>
+              <circle class="puddle-shine" cx="118" cy="110" r="18"/>
+              <circle class="puddle-shine" cx="96" cy="146" r="8"/>
+            </svg>
+            <img class="jar-label" src="/img/jar-label.webp" width="720" height="720"
+                 alt="The round Gooolala jar lid label with the crowned slime mascot">
+            <span class="stage-tag" id="stage-tag">Queen’s Pink</span>
+          </div>
+
+          <div class="product-panel">
+            <p class="eyebrow">One jar · handmade</p>
+            <h3 class="product-name" id="product-name">Royal Collection Slime</h3>
+            <p class="price"><span id="price">$8.00</span> <small>per jar</small></p>
+            <p class="product-desc" id="product-desc">One jar of handmade Gooolala slime in the color of your choice, finished with the official royal lid label.</p>
+
+            <fieldset class="colors">
+              <legend>Pick your happy color: <strong id="color-name">Queen’s Pink</strong></legend>
+              <div class="swatches" id="swatches" role="radiogroup" aria-label="Slime color"></div>
+              <p class="color-blurb" id="color-blurb" aria-live="polite"></p>
+            </fieldset>
+
+            <div class="buy-row">
+              <div class="qty" role="group" aria-label="Quantity">
+                <button type="button" id="qty-minus" aria-label="One less jar">−</button>
+                <output id="qty" aria-live="polite">1</output>
+                <button type="button" id="qty-plus" aria-label="One more jar">+</button>
+              </div>
+              <button type="button" class="btn btn-pink btn-add" id="add">Add gooo <span aria-hidden="true">+</span></button>
+            </div>
+            <p class="ship-note" id="ship-note"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="steps" aria-labelledby="steps-title">
+      <div class="wrap">
+        <div class="section-head center">
+          <p class="eyebrow">How the magic happens</p>
+          <h2 id="steps-title">From the castle to your hands</h2>
+        </div>
+        <ol class="step-list">
+          <li class="step" style="--c:var(--pink)">
+            <span class="step-num">1</span>
+            <h3>Pick your colors</h3>
+            <p>Mix and match from ten royal shades. One jar or a whole rainbow.</p>
+          </li>
+          <li class="step" style="--c:var(--lavender)">
+            <span class="step-num">2</span>
+            <h3>Aviana mixes it up</h3>
+            <p>Every jar is stirred, stretched and labeled by the Slime Queen herself.</p>
+          </li>
+          <li class="step" style="--c:var(--aqua)">
+            <span class="step-num">3</span>
+            <h3>Squish, stretch, smile!</h3>
+            <p>We email you when it ships, and the fun lands right at your door.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- QUEEN -->
+    <section class="queen" id="queen" aria-labelledby="queen-title">
+      <div class="wrap queen-grid">
+        <div class="queen-card">
+          <span class="crown" aria-hidden="true">👑</span>
+          <p class="eyebrow">Meet the Queen</p>
+          <h2 id="queen-title">Hi, I’m Aviana!</h2>
+          <p>I’m the Slime Queen of Gooolala, a colorful little kingdom where every jar of gooo gets a fancy name and a whole lot of love.</p>
+          <p>I started making slime because squishing it makes everybody smile. Now I mix every color myself, from bright <strong class="ink-pink">Queen’s Pink</strong> to dreamy <strong class="ink-lav">Moonlight Pearl</strong>.</p>
+          <p class="signature">— Aviana, the Slime Queen</p>
+        </div>
+        <div class="queen-quotes">
+          <blockquote class="bubble b-aqua">“Three o’s. One word. Lots of gooo.”</blockquote>
+          <blockquote class="bubble b-yellow">“Every royal deserves a happy color.”</blockquote>
+          <blockquote class="bubble b-pink">“Squish first. Smile second.”</blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARE -->
+    <section class="care" id="care" aria-labelledby="care-title">
+      <div class="wrap">
+        <div class="section-head center">
+          <p class="eyebrow">Keep your gooo happy</p>
+          <h2 id="care-title">Gooo Care</h2>
+        </div>
+        <div class="care-grid">
+          <div class="care-card"><span class="care-icon" aria-hidden="true">🫙</span><h3>Lid on tight</h3><p>Close the jar after every squish so your slime stays soft and stretchy.</p></div>
+          <div class="care-card"><span class="care-icon" aria-hidden="true">🧼</span><h3>Clean hands</h3><p>Wash hands before and after play. Clean hands keep slime looking royal.</p></div>
+          <div class="care-card"><span class="care-icon" aria-hidden="true">🛋️</span><h3>Play on smooth spots</h3><p>Keep slime away from carpet, clothes and hair. Tables are best!</p></div>
+          <div class="care-card warn"><span class="care-icon" aria-hidden="true">🚫</span><h3>Do not eat</h3><p>Slime is a toy, not a snack. Grown-up help recommended for little royals.</p></div>
+        </div>
+
+        <div class="faq">
+          <details>
+            <summary>Who checks out?</summary>
+            <p>Checkout is for grown-ups. Kids can fill the Gooo bag, then a parent or guardian pays securely with Stripe.</p>
+          </details>
+          <details>
+            <summary>Will I get updates about my order?</summary>
+            <p>Yes! You’ll get a royal confirmation email right after checkout and another one with tracking when your gooo ships.</p>
+          </details>
+          <details>
+            <summary>Do the colors look exactly like the screen?</summary>
+            <p>Every jar is handmade, so each one is a little bit unique. Screens show colors a little differently, too.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <img src="/img/gooolala-logo.webp" width="260" height="134" alt="Gooolala! by Aviana, the Slime Queen" loading="lazy">
+      <p>Royally fun to squish!<br><small>Slime is a toy, not a snack. Please do not eat.</small></p>
+      <p class="footer-links"><a href="#menu">Gooo Menu</a> · <a href="#queen">Meet the Queen</a> · <a href="#care">Gooo Care</a></p>
+      <p class="copyright"><small>© <span id="year"></span> Gooolala · gooolala.com · Secure checkout by Stripe</small></p>
+    </div>
+  </footer>
+
+  <!-- BAG DRAWER -->
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="bag" id="bag" role="dialog" aria-modal="true" aria-labelledby="bag-title" hidden>
+    <div class="bag-head">
+      <h2 id="bag-title">My Gooo</h2>
+      <button class="icon-btn" id="close-bag" aria-label="Close bag">✕</button>
+    </div>
+    <div class="bag-body" id="bag-body"></div>
+    <div class="bag-foot">
+      <div class="bag-row"><span>Subtotal</span><strong id="bag-subtotal">$0.00</strong></div>
+      <p class="bag-ship" id="bag-ship"></p>
+      <p class="bag-error" id="bag-error" role="alert"></p>
+      <button class="btn btn-plum btn-block" id="checkout">Grown-up checkout <span aria-hidden="true">🔒</span></button>
+      <p class="bag-fine">Secure payment with Stripe. Order emails go to the grown-up’s inbox.</p>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

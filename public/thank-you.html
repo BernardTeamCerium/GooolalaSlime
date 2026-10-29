@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thank you! · Gooolala!</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .thanks { min-height: 100vh; display: grid; place-items: center; padding: 48px 0; position: relative; overflow: hidden; }
+    .thanks-card {
+      position: relative; z-index: 1; background: #fff; border: 3px solid var(--plum); border-radius: 32px;
+      box-shadow: 12px 12px 0 var(--pink); padding: 40px 36px; max-width: 560px; width: 100%; text-align: center;
+    }
+    .thanks-card img { width: 260px; margin: 0 auto 14px; }
+    .thanks-card h1 { font-size: clamp(34px, 6vw, 46px); margin-bottom: 12px; }
+    .thanks-card ul { list-style: none; padding: 0; margin: 22px 0; text-align: left; }
+    .thanks-card li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 2px dashed #E5D6F2; }
+    .thanks-card li .swatch-dot { width: 34px; height: 34px; flex: none; }
+    .thanks-card li span:last-child { margin-left: auto; font-weight: 700; }
+    .thanks-total { font-size: 18px; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 22px; }
+    .order-num { display: inline-block; background: var(--yellow); border: 2px solid var(--plum); border-radius: var(--pill); padding: 4px 14px; font-weight: 700; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main class="thanks">
+    <div class="bubbles" aria-hidden="true">
+      <i style="--x:8%;--s:24px;--d:8s;--c:var(--pink)"></i>
+      <i style="--x:28%;--s:14px;--d:6s;--c:var(--aqua)"></i>
+      <i style="--x:52%;--s:20px;--d:9s;--c:var(--lavender)"></i>
+      <i style="--x:74%;--s:28px;--d:10s;--c:var(--yellow)"></i>
+      <i style="--x:90%;--s:16px;--d:7s;--c:var(--pink)"></i>
+    </div>
+    <div class="wrap" style="display:grid;place-items:center">
+      <div class="thanks-card">
+        <img src="/img/gooolala-logo.webp" width="1200" height="619" alt="Gooolala! by Aviana, the Slime Queen">
+        <p class="eyebrow" id="order-num-wrap" hidden><span class="order-num" id="order-num"></span></p>
+        <h1 id="thanks-title">Hooray! Your gooo is official.</h1>
+        <p id="thanks-msg">Aviana is rolling up her sleeves to mix your slime. A royal confirmation email is on its way to your inbox.</p>
+        <div id="thanks-items"></div>
+        <a class="btn btn-plum" href="/">Back to the kingdom</a>
+      </div>
+    </div>
+  </main>
+  <script type="module">
+    const id = new URLSearchParams(location.search).get('session_id');
+    // Order is complete, so empty the bag.
+    try { localStorage.removeItem('gooolala-bag'); } catch {}
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    if (id) {
+      try {
+        const res = await fetch(`/api/order/${encodeURIComponent(id)}`);
+        if (res.ok) {
+          const o = await res.json();
+          const money = (c) => new Intl.NumberFormat('en-US', { style: 'currency', currency: o.currency.toUpperCase() }).format(c / 100);
+          document.getElementById('order-num').textContent = `Order #${o.number}`;
+          document.getElementById('order-num-wrap').hidden = false;
+          if (o.firstName) document.getElementById('thanks-title').textContent = `Hooray, ${o.firstName}! Your gooo is official.`;
+          if (o.slimeFor) document.getElementById('thanks-msg').innerHTML =
+            `Aviana is mixing up something special for <strong>${esc(o.slimeFor)}</strong>. A royal confirmation email is on its way to your inbox.`;
+          if (!o.paid) {
+            document.getElementById('thanks-title').textContent = 'Almost there! Your payment is processing.';
+            document.getElementById('thanks-msg').textContent = 'Some payment types take a little longer. We’ll email you as soon as it clears.';
+          }
+          document.getElementById('thanks-items').innerHTML =
+            `<ul>${o.items.map((i) => `<li><span class="swatch-dot" style="--c:${esc(i.hex)}"></span><span>${esc(i.name)} × ${i.qty}</span><span>${money(i.amount)}</span></li>`).join('')}</ul>
+             <div class="thanks-total"><span>Total</span><span>${money(o.total)}</span></div>`;
+        }
+      } catch { /* the generic thank-you message still shows */ }
+    }
+  </script>
+</body>
+</html>
