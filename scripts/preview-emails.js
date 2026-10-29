@@ -34,7 +34,7 @@ const emails = {
   'order-confirmation': orderConfirmationEmail(sample, { logoSrc }),
   'order-shipped': orderShippedEmail(sample, { logoSrc, carrier: 'USPS', trackingNumber: '9400 1000 0000 0000 0000 00', trackingUrl: 'https://tools.usps.com/go/TrackConfirmAction' }),
   'payment-failed': paymentFailedEmail(sample, { logoSrc, shopUrl: 'https://gooolala.com/#menu' }),
-  'owner-new-order': ownerNewOrderEmail(sample),
+  'owner-new-order': ownerNewOrderEmail(sample, { progress: { sold: 37, goal: 100 } }),
 };
 
 await fs.mkdir(out, { recursive: true });

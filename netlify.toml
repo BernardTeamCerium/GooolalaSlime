@@ -1,0 +1,13 @@
+[build]
+  publish = "public"
+  # No build step: the site is plain HTML/CSS/JS and the API is one function.
+  command = ""
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

@@ -19,6 +19,8 @@ const esc = (s = '') =>
 export const money = (cents, currency = 'usd') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.toUpperCase() }).format(cents / 100);
 
+const MAKE_DAYS = Number(process.env.MAKE_DAYS || 3);
+
 const jars = (n) => `${n} jar${n === 1 ? '' : 's'}`;
 
 function itemRows(items, currency) {
@@ -119,7 +121,7 @@ export function orderConfirmationEmail(order, { logoSrc }) {
     accent: `linear-gradient(90deg, ${BRAND.pink}, ${BRAND.lavender}, ${BRAND.aqua})`,
     eyebrow: `Order #${order.number}`,
     heading: `Hooray${who}! Your gooo is official.`,
-    intro: `Thank you for joining the kingdom! We got your order for ${jars(totalJars)} of Royal Collection Slime. ${forLine} We’ll email you again the moment it ships.`,
+    intro: `Thank you for joining the kingdom! We got your order for ${jars(totalJars)} of Royal Collection Slime. ${forLine} Every jar is made to order, so it takes about <strong>${MAKE_DAYS} days</strong> to make. We’ll email you again the moment it ships.`,
     body: `
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemRows(order.items, order.currency)}${totalsRows(order)}</table>
       ${addressBlock(order.shipping)}
@@ -134,6 +136,7 @@ Order #${order.number}
 ${textLines(order)}
 Total: ${money(order.total, order.currency)}
 ${order.slimeFor ? `\nMade for: ${order.slimeFor}\n` : ''}
+Every jar is made to order, so it takes about ${MAKE_DAYS} days to make.
 We’ll email you again the moment it ships.
 
 Stay squishy,
@@ -197,7 +200,12 @@ export function paymentFailedEmail(order, { logoSrc, shopUrl }) {
   return { subject: `Your Gooolala order needs a little help (#${order.number})`, html, text };
 }
 
-export function ownerNewOrderEmail(order) {
+function makeBy() {
+  const d = new Date(Date.now() + MAKE_DAYS * 86_400_000);
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+export function ownerNewOrderEmail(order, { progress } = {}) {
   const lines = order.items.map((i) => `<li>${esc(i.name)} × ${i.qty}</li>`).join('');
   const a = order.shipping?.address || {};
   const html = `<div style="font-family:${BRAND.font};color:${BRAND.plum};font-size:15px;line-height:1.6;">
@@ -205,9 +213,11 @@ export function ownerNewOrderEmail(order) {
     <p><strong>Customer:</strong> ${esc(order.customerName || '')} &lt;${esc(order.email || '')}&gt;</p>
     ${order.slimeFor ? `<p><strong>Made for:</strong> ${esc(order.slimeFor)}</p>` : ''}
     <ul>${lines}</ul>
+    <p><strong>Make by:</strong> ${makeBy()}</p>
+    ${progress ? `<p><strong>Royal goal:</strong> ${progress.sold} of ${progress.goal} jars sold 👑</p>` : ''}
     <p><strong>Ship to:</strong><br>${[order.shipping?.name, a.line1, a.line2, [a.city, a.state, a.postal_code].filter(Boolean).join(', '), a.country].filter(Boolean).map(esc).join('<br>')}</p>
     <p style="font-size:13px;">Stripe Checkout session: ${esc(order.sessionId)}<br>When it ships, run: <code>npm run email:shipped -- ${esc(order.sessionId)} &lt;tracking-number&gt; [carrier]</code></p>
   </div>`;
-  const text = `New order #${order.number} — ${money(order.total, order.currency)}\n${order.customerName} <${order.email}>\n${order.items.map((i) => `${i.name} x ${i.qty}`).join('\n')}\nSession: ${order.sessionId}`;
+  const text = `New order #${order.number} — ${money(order.total, order.currency)}\n${order.customerName} <${order.email}>\n${order.items.map((i) => `${i.name} x ${i.qty}`).join('\n')}\nMake by: ${makeBy()}${progress ? `\nRoyal goal: ${progress.sold} of ${progress.goal} jars sold` : ''}\nSession: ${order.sessionId}`;
   return { subject: `New Gooolala order #${order.number} (${money(order.total, order.currency)})`, html, text };
 }

@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
-import { COLORS } from './catalog.js';
-import { LOGO_SRC, sendEmail } from './mailer.js';
+import { COLORS, PRODUCT } from './catalog.js';
+import { LOGO_SRC, OWNER_EMAIL, SITE_URL, sendEmail } from './mailer.js';
 import { orderConfirmationEmail, orderShippedEmail, ownerNewOrderEmail, paymentFailedEmail } from './emails.js';
 
 export const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
@@ -56,19 +56,37 @@ async function once(order, flag, fn) {
   const pi = order.paymentIntent;
   if (pi?.metadata?.[flag]) return false;
   await fn();
-  if (pi) await stripe.paymentIntents.update(pi.id, { metadata: { [flag]: new Date().toISOString() } });
+  if (pi) pi.metadata = (await stripe.paymentIntents.update(pi.id, { metadata: { [flag]: new Date().toISOString() } })).metadata;
   return true;
+}
+
+// Counts jars sold by adding up every paid Checkout Session for this product.
+// Stripe is the record of sales, so there's no separate database to keep in sync.
+let cache = { at: 0, sold: 0 };
+export async function salesProgress() {
+  if (Date.now() - cache.at < 30_000) return cache.sold;
+  let sold = 0;
+  for await (const s of stripe.checkout.sessions.list({ status: 'complete', limit: 100, expand: ['data.line_items'] })) {
+    if (s.payment_status !== 'paid' || s.metadata?.product_id !== PRODUCT.id) continue;
+    sold += s.line_items?.data.reduce((n, li) => n + li.quantity, 0) || 0;
+  }
+  cache = { at: Date.now(), sold };
+  return sold;
 }
 
 export async function sendConfirmation(sessionId) {
   const order = await loadOrder(sessionId);
   if (order.paymentStatus !== 'paid') return false;
-  return once(order, 'gooolala_confirmation_sent', async () => {
-    await sendEmail({ to: order.email, ...orderConfirmationEmail(order, { logoSrc: LOGO_SRC }) });
-    if (process.env.OWNER_EMAIL) {
-      await sendEmail({ to: process.env.OWNER_EMAIL, replyTo: order.email, ...ownerNewOrderEmail(order) });
-    }
+  // Separate flags, so a Stripe retry after one email fails never re-sends the other.
+  const sent = await once(order, 'gooolala_confirmation_sent', () =>
+    sendEmail({ to: order.email, ...orderConfirmationEmail(order, { logoSrc: LOGO_SRC }) })
+  );
+  await once(order, 'gooolala_owner_alert_sent', async () => {
+    cache.at = 0; // include this order in the count
+    const progress = await salesProgress().then((sold) => ({ sold, goal: PRODUCT.salesGoal }), () => null);
+    await sendEmail({ to: OWNER_EMAIL, replyTo: order.email, ...ownerNewOrderEmail(order, { progress }) });
   });
+  return sent;
 }
 
 export async function sendPaymentFailed(sessionId) {
@@ -76,7 +94,7 @@ export async function sendPaymentFailed(sessionId) {
   return once(order, 'gooolala_failed_sent', () =>
     sendEmail({
       to: order.email,
-      ...paymentFailedEmail(order, { logoSrc: LOGO_SRC, shopUrl: `${process.env.BASE_URL || 'https://gooolala.com'}/#menu` }),
+      ...paymentFailedEmail(order, { logoSrc: LOGO_SRC, shopUrl: `${SITE_URL}/#menu` }),
     })
   );
 }

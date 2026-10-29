@@ -16,7 +16,7 @@
   <a class="skip" href="#menu">Skip to the Gooo Menu</a>
 
   <div class="announce" id="announce">
-    <span>✨ Handmade by the Slime Queen</span>
+    <span>✨ Made to order by the Slime Queen in <span data-make-days>3</span> days</span>
     <span class="dot">·</span>
     <span id="announce-shipping">Royal shipping on every order</span>
   </div>
@@ -60,7 +60,7 @@
           </div>
           <ul class="hero-facts">
             <li><span aria-hidden="true">✦</span> 10 royal colors</li>
-            <li><span aria-hidden="true">✦</span> Mixed by hand</li>
+            <li><span aria-hidden="true">✦</span> Made to order</li>
             <li><span aria-hidden="true">✦</span> One slime queen</li>
           </ul>
         </div>
@@ -133,6 +133,17 @@
               <button type="button" class="btn btn-pink btn-add" id="add">Add gooo <span aria-hidden="true">+</span></button>
             </div>
             <p class="ship-note" id="ship-note"></p>
+
+            <div class="goal" id="goal" hidden>
+              <div class="goal-head">
+                <span class="goal-title">👑 The Royal Goal</span>
+                <span class="goal-count"><strong id="goal-sold">0</strong> of <span id="goal-target">100</span> jars</span>
+              </div>
+              <div class="goal-bar" role="progressbar" aria-labelledby="goal-msg" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="goal-bar">
+                <span class="goal-fill" id="goal-fill"></span>
+              </div>
+              <p class="goal-msg" id="goal-msg">Help Aviana make her first 100 jars of gooo!</p>
+            </div>
           </div>
         </div>
       </div>
@@ -154,7 +165,7 @@
           <li class="step" style="--c:var(--lavender)">
             <span class="step-num">2</span>
             <h3>Aviana mixes it up</h3>
-            <p>Every jar is stirred, stretched and labeled by the Slime Queen herself.</p>
+            <p>Every jar is made to order, stirred and labeled by the Slime Queen herself. It takes about <span data-make-days>3</span> days.</p>
           </li>
           <li class="step" style="--c:var(--aqua)">
             <span class="step-num">3</span>
@@ -204,6 +215,10 @@
             <p>Checkout is for grown-ups. Kids can fill the Gooo bag, then a parent or guardian pays securely with Stripe.</p>
           </details>
           <details>
+            <summary>How long until my slime arrives?</summary>
+            <p>Every jar is made just for you, so Aviana needs about <span data-make-days>3</span> days to make your order. Then it ships, and you’ll see the full delivery estimate at checkout.</p>
+          </details>
+          <details>
             <summary>Will I get updates about my order?</summary>
             <p>Yes! You’ll get a royal confirmation email right after checkout and another one with tracking when your gooo ships.</p>
           </details>
@@ -236,6 +251,7 @@
     <div class="bag-foot">
       <div class="bag-row"><span>Subtotal</span><strong id="bag-subtotal">$0.00</strong></div>
       <p class="bag-ship" id="bag-ship"></p>
+      <p class="bag-tax" id="bag-tax" hidden>Sales tax is added at checkout based on where you live.</p>
       <p class="bag-error" id="bag-error" role="alert"></p>
       <button class="btn btn-plum btn-block" id="checkout">Grown-up checkout <span aria-hidden="true">🔒</span></button>
       <p class="bag-fine">Secure payment with Stripe. Order emails go to the grown-up’s inbox.</p>

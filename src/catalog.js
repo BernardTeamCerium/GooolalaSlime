@@ -7,9 +7,13 @@ export const PRODUCT = {
   tagline: 'Royally fun to squish!',
   description:
     'One jar of handmade Gooolala slime in the color of your choice, finished with the official royal lid label.',
-  // Price per jar in cents (USD). $8.00 matches the design preview — confirm before launch.
+  // Price per jar in cents (USD).
   unitAmount: Number(process.env.PRICE_CENTS || 800),
   currency: 'usd',
+  // Stripe Tax category. txcd_99999999 is "General - Tangible Goods".
+  taxCode: process.env.STRIPE_TAX_CODE || 'txcd_99999999',
+  // Jars-sold goal shown on the page.
+  salesGoal: Number(process.env.SALES_GOAL || 100),
   maxPerColor: 10,
   maxPerOrder: 30,
 };

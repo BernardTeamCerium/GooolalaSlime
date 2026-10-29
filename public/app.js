@@ -4,7 +4,7 @@ const FALLBACK = {
   product: {
     name: 'Royal Collection Slime',
     description: 'One jar of handmade Gooolala slime in the color of your choice, finished with the official royal lid label.',
-    unitAmount: 800, currency: 'usd', maxPerColor: 10, maxPerOrder: 30,
+    unitAmount: 800, currency: 'usd', maxPerColor: 10, maxPerOrder: 30, salesGoal: 100, makeDays: 3,
   },
   colors: [],
   shipping: { amount: 500, freeFrom: 0 },
@@ -45,18 +45,45 @@ async function init() {
   $('#announce-shipping').textContent = shipping.freeFrom
     ? `Free royal shipping on orders ${money(shipping.freeFrom)}+`
     : shipping.amount ? `Royal shipping ${money(shipping.amount)}` : 'Free royal shipping';
-  $('#ship-note').textContent = shipping.freeFrom
-    ? `👑 Free shipping when your bag reaches ${money(shipping.freeFrom)}.`
-    : 'Ships in a sealed jar with the official royal label.';
+  for (const el of document.querySelectorAll('[data-make-days]')) el.textContent = product.makeDays;
+  $('#ship-note').textContent =
+    `🫙 Made to order in about ${product.makeDays} days, then shipped` +
+    (shipping.freeFrom ? `. Free shipping on orders ${money(shipping.freeFrom)}+.`
+      : shipping.amount ? ` for ${money(shipping.amount)}.` : ' free!');
+  $('#bag-tax').hidden = !state.config.taxAtCheckout;
 
   renderSwatches();
   selectColor(state.config.colors[0]?.id, false);
   renderBag();
+  loadGoal();
 
   if (new URLSearchParams(location.search).has('canceled')) {
     toast('Checkout canceled. Your gooo is still waiting in the bag!');
     history.replaceState(null, '', location.pathname + location.hash);
   }
+}
+
+// ---------- Royal Goal ----------
+async function loadGoal() {
+  if (!state.config.checkoutEnabled) return;
+  try {
+    const res = await fetch('/api/progress');
+    if (!res.ok) return;
+    const { sold, goal } = await res.json();
+    if (!goal) return;
+    const pct = Math.min(100, Math.round((sold / goal) * 100));
+    $('#goal-sold').textContent = sold;
+    $('#goal-target').textContent = goal;
+    $('#goal-bar').setAttribute('aria-valuenow', String(pct));
+    $('#goal-msg').textContent =
+      sold >= goal ? `🎉 Goal reached! Thank you, royal family. The gooo keeps flowing!`
+      : sold === 0 ? `Help Aviana make her first ${goal} jars of gooo! Yours could be number one.`
+      : `Only ${goal - sold} more jar${goal - sold === 1 ? '' : 's'} to go. Help Aviana reach ${goal}!`;
+    $('#goal').classList.toggle('done', sold >= goal);
+    $('#goal').hidden = false;
+    // Let the bar grow in once it's visible.
+    requestAnimationFrame(() => requestAnimationFrame(() => { $('#goal-fill').style.width = `${pct}%`; }));
+  } catch { /* the goal is a bonus; the page works without it */ }
 }
 
 // ---------- Color picker ----------

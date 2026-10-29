@@ -1,15 +1,15 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import nodemailer from 'nodemailer';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const LOGO_PATH = path.join(ROOT, 'public/img/gooolala-logo-email.png');
-const LOGO_CID = 'gooolala-logo@gooolala';
-const PREVIEW_DIR = path.join(ROOT, 'email-previews');
+export const FROM = process.env.EMAIL_FROM || 'Gooolala! <hello@gooolala.com>';
+export const OWNER_EMAIL = process.env.OWNER_EMAIL || 'hello@gooolala.com';
 
-// Emails reference the logo as an inline attachment so it shows up even before the site is live.
-export const LOGO_SRC = `cid:${LOGO_CID}`;
+// The public site address. Netlify sets URL automatically; BASE_URL overrides it.
+export const SITE_URL = (process.env.BASE_URL || process.env.URL || 'https://gooolala.com').replace(/\/$/, '');
+
+// Emails load the logo from the live site, so it must be a public https address to show in inboxes.
+export const LOGO_SRC = `${SITE_URL.startsWith('https://') ? SITE_URL : 'https://gooolala.com'}/img/gooolala-logo-email.png`;
 
 let transport;
 function getTransport() {
@@ -23,24 +23,21 @@ function getTransport() {
   return transport;
 }
 
-// Sends through SMTP when configured; otherwise saves the email as an .html file
+// Sends through SMTP when configured. Otherwise (local testing) saves the email as an .html file
 // in email-previews/ so you can see exactly what customers would get.
 export async function sendEmail({ to, subject, html, text, replyTo }) {
   const t = getTransport();
-  if (!t) {
-    await fs.mkdir(PREVIEW_DIR, { recursive: true });
-    const file = path.join(PREVIEW_DIR, `${Date.now()}-${subject.replace(/[^a-z0-9]+/gi, '-').slice(0, 60)}.html`);
-    await fs.writeFile(file, html.replaceAll(LOGO_SRC, '../public/img/gooolala-logo-email.png'));
-    console.log(`[email] SMTP not configured. Saved "${subject}" for ${to} → ${path.relative(ROOT, file)}`);
-    return { preview: file };
+  if (t) {
+    return t.sendMail({ from: FROM, to, replyTo: replyTo || process.env.EMAIL_REPLY_TO || undefined, subject, html, text });
   }
-  return t.sendMail({
-    from: process.env.EMAIL_FROM || 'Gooolala! <hello@gooolala.com>',
-    to,
-    replyTo: replyTo || process.env.EMAIL_REPLY_TO || undefined,
-    subject,
-    html,
-    text,
-    attachments: html.includes(LOGO_SRC) ? [{ filename: 'gooolala.png', path: LOGO_PATH, cid: LOGO_CID }] : [],
-  });
+  try {
+    const dir = path.resolve('email-previews');
+    await fs.mkdir(dir, { recursive: true });
+    const file = path.join(dir, `${Date.now()}-${subject.replace(/[^a-z0-9]+/gi, '-').slice(0, 60)}.html`);
+    await fs.writeFile(file, html);
+    console.log(`[email] SMTP not configured. Saved "${subject}" for ${to} → ${file}`);
+  } catch {
+    console.log(`[email] SMTP not configured. Would have sent "${subject}" to ${to}`);
+  }
+  return null;
 }

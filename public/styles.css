@@ -245,6 +245,31 @@ section { scroll-margin-top: 90px; }
 .btn-add { flex: 1; min-width: 180px; font-size: 18px; }
 .ship-note { margin: 16px 0 0; font-size: 14px; }
 
+/* Royal Goal tracker */
+.goal {
+  margin-top: 26px; padding: 18px 20px 16px;
+  background: var(--yellow-tint); border: 3px solid var(--plum); border-radius: var(--radius);
+  box-shadow: 0 6px 0 var(--yellow);
+}
+.goal[hidden] { display: none; }
+.goal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.goal-title { font-weight: 700; font-size: 17px; }
+.goal-count { font-size: 15px; }
+.goal-count strong { font-size: 22px; }
+.goal-bar { position: relative; height: 26px; background: #fff; border: 3px solid var(--plum); border-radius: var(--pill); overflow: hidden; }
+.goal-fill {
+  display: block; height: 100%; width: 0; min-width: 0;
+  background: repeating-linear-gradient(-45deg, rgba(255,255,255,.28) 0 10px, transparent 10px 20px),
+              linear-gradient(90deg, var(--pink), var(--lavender), var(--aqua));
+  border-right: 3px solid var(--plum); border-radius: 0 var(--pill) var(--pill) 0;
+  transition: width 1.2s cubic-bezier(.3,1.2,.4,1);
+  animation: stripes 1.6s linear infinite;
+  background-size: 28px 28px, 100% 100%;
+}
+@keyframes stripes { to { background-position: 28px 0, 0 0; } }
+.goal-msg { margin: 10px 0 0; font-size: 14px; }
+.goal.done { background: var(--pink-tint); box-shadow: 0 6px 0 var(--pink); }
+
 /* ---------- Steps ---------- */
 .steps { padding: 90px 0; background: var(--lav-tint); border-block: 3px solid var(--plum); }
 .step-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -337,7 +362,8 @@ section { scroll-margin-top: 90px; }
 .bag-item .qty output { min-width: 22px; font-size: 16px; }
 .bag-foot { padding: 18px 22px 22px; border-top: 3px solid var(--plum); background: #fff; }
 .bag-row { display: flex; justify-content: space-between; font-size: 18px; }
-.bag-ship { font-size: 14px; margin: 6px 0 14px; }
+.bag-ship { font-size: 14px; margin: 6px 0 4px; }
+.bag-tax { font-size: 13px; margin: 0 0 14px; opacity: .85; }
 .bag-error { color: #B3123E; font-weight: 700; font-size: 14px; margin: 0 0 10px; }
 .bag-error:empty { display: none; }
 .bag-fine { font-size: 12px; text-align: center; margin: 12px 0 0; opacity: .8; }

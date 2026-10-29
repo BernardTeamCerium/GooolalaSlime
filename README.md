@@ -1,10 +1,51 @@
 # Gooolala! by Aviana, the Slime Queen
 
-A one-product landing page for **Royal Collection Slime** (10 royal colors), with Stripe Checkout and branded, personalized order emails.
+A one-product landing page for **Royal Collection Slime** ($8 a jar, 10 royal colors), hosted on Netlify. It uses Stripe Checkout with sales tax, sends branded order emails from hello@gooolala.com, and shows a Royal Goal tracker for the first 100 jars.
 
-- **Landing page** (`public/`): hero, color picker, "My Gooo" bag, how-it-works, Meet the Queen, Gooo Care and FAQ. Uses the brand guide palette, Trebuchet MS, pill buttons and 24px cards.
-- **Checkout** (`server.js`): prices are set on the server and payment goes through Stripe's hosted Checkout page. It collects the shipping address and an optional *"Who is this gooo for?"* name, and accepts promo codes.
-- **Emails** (`src/emails.js`): order confirmation, shipped (with tracking), payment failed, and a new-order alert for Aviana. Each one is personalized with the customer's name, who the slime is for, and color swatches.
+- **Landing page** (`public/`): hero, color picker, "My Gooo" bag, Royal Goal tracker, how-it-works, Meet the Queen, Gooo Care and FAQ.
+- **API** (`src/api.js`): runs as a single Netlify Function at `/api/*` (`netlify/functions/api.mjs`).
+- **Checkout**: Stripe's hosted page with $5 flat shipping and sales tax based on the buyer's address (Stripe Tax). It also asks *"Who is this gooo for?"*, and the delivery estimate includes the 3 days it takes to make an order.
+- **Emails** (`src/emails.js`):
+  - order confirmation, shipped (with tracking) and payment failed, sent to the customer
+  - a new-order alert to hello@gooolala.com with a "make by" date and goal progress
+- **Royal Goal**: counts paid jars straight from Stripe, so there's no database. Sales are monitored in the Stripe dashboard.
+
+## 1. Set up Stripe
+
+1. In the [Stripe dashboard](https://dashboard.stripe.com), copy your secret key (start with test mode: `sk_test_…`).
+2. **Turn on Stripe Tax**: go to *Tax → Settings*, add your origin (business) address, and add registrations for the states where you collect tax. Stripe only charges tax where you're registered.
+3. After the first deploy (step 2), add a webhook under *Developers → Webhooks*:
+   - URL: `https://gooolala.com/api/stripe-webhook`
+   - Events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`
+   - Copy its signing secret (`whsec_…`).
+
+## 2. Deploy on Netlify
+
+1. In Netlify, choose *Add new site → Import an existing project* and pick this repository. `netlify.toml` already has the settings: no build command, publish `public/`, functions in `netlify/functions/`.
+2. Under *Site configuration → Environment variables*, add:
+
+| Variable | Value |
+| --- | --- |
+| `STRIPE_SECRET_KEY` | `sk_test_…` (switch to `sk_live_…` at launch) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_…` from the webhook |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | From your email provider |
+
+   Everything else has the right default: $8 price, $5 shipping, 3 make days, 100-jar goal, tax on, and emails from and to hello@gooolala.com. See `.env.example` to change any of them.
+3. Connect the gooolala.com domain under *Domain management*.
+
+When you switch from test to live keys, create a new webhook in live mode and update `STRIPE_WEBHOOK_SECRET` too.
+
+## 3. Email from hello@gooolala.com
+
+Any SMTP provider works (Resend, Postmark, SendGrid, Google Workspace…). Verify the **gooolala.com** domain with that provider (it gives you DNS records to add) so emails don't land in spam.
+
+**When an order ships**, run this on your computer with Stripe and SMTP keys in a local `.env`. The session id is in the new-order alert email.
+
+```bash
+npm run email:shipped -- cs_live_XXXX 9400111899223456789012 USPS
+```
+
+Each email is sent at most once per order, even if Stripe retries a webhook.
 
 ## Run it locally
 
@@ -20,57 +61,25 @@ cp .env.example .env
 npm run dev
 ```
 
-Open http://localhost:4242. With no Stripe key the site runs in **preview mode**: everything works except paying.
-
-## Turn on Stripe
-
-1. Create a Stripe account and copy your **test** secret key (`sk_test_…`) into `STRIPE_SECRET_KEY` in `.env`.
-2. Forward webhooks to your machine with the [Stripe CLI](https://docs.stripe.com/stripe-cli):
-
-   ```bash
-   stripe listen --forward-to localhost:4242/api/stripe-webhook
-   ```
-
-   Copy the `whsec_…` it prints into `STRIPE_WEBHOOK_SECRET`, then restart the server.
-3. Place a test order with card `4242 4242 4242 4242`, any future date and any CVC.
-
-For production, add a webhook endpoint in the Stripe dashboard pointing to `https://YOUR-DOMAIN/api/stripe-webhook` with these events:
-`checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`.
-
-## Emails
-
-Until SMTP is configured, every email is saved as an HTML file in `email-previews/` instead of being sent. To see all the templates with sample data:
+Open http://localhost:4242. Without a Stripe key the site runs in **preview mode**: everything works except paying. Without SMTP, emails are saved to `email-previews/` instead of being sent. To see every email template with sample data:
 
 ```bash
 npm run email:preview
 ```
 
-To send real email, fill in `SMTP_*`, `EMAIL_FROM` and `OWNER_EMAIL` in `.env`. Any SMTP provider works (Resend, Postmark, SendGrid, Google Workspace…). Use a sending domain you've verified with that provider so emails don't land in spam.
-
-**When an order ships**, run this with the session id from the new-order email:
+To test real payments locally, add your test key to `.env`, then forward webhooks with the [Stripe CLI](https://docs.stripe.com/stripe-cli) and put the `whsec_…` it prints in `.env`:
 
 ```bash
-npm run email:shipped -- cs_live_XXXX 9400111899223456789012 USPS
+stripe listen --forward-to localhost:4242/api/stripe-webhook
 ```
 
-Each email is sent at most once per order, even if Stripe retries a webhook. A flag is stored on the order's PaymentIntent in Stripe, so no database is needed.
+Test card: `4242 4242 4242 4242`, any future date, any CVC.
 
-## Settings (`.env`)
+## Where things live
 
-| Variable | What it does |
-| --- | --- |
-| `PRICE_CENTS` | Price per jar (default `800` = $8.00) |
-| `SHIPPING_CENTS` | Flat shipping (default `500`) |
-| `FREE_SHIPPING_FROM_CENTS` | Subtotal for free shipping (`0` = off) |
-| `SHIP_COUNTRIES` | e.g. `US` or `US,CA` |
-| `STRIPE_AUTOMATIC_TAX` | `true` once Stripe Tax is set up |
-| `BASE_URL` | Your public URL (used for redirects and product images) |
-
-Colors, names and descriptions live in `src/catalog.js`. Email wording lives in `src/emails.js`.
-
-## Deploying
-
-This is a plain Node 18+ app (`npm start`), so it runs on Render, Railway, Fly.io, Heroku and similar hosts. Set the same environment variables there, and set `BASE_URL` to the live https URL.
+- Colors, names, price and goal: `src/catalog.js`
+- Email wording: `src/emails.js`
+- Page copy: `public/index.html`
 
 ## Brand notes followed
 
